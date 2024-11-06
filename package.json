@@ -1,0 +1,24 @@
+{
+  "name": "mq-implementation",
+  "version": "1.0.0",
+  "description": "Just a Simple BullMq Implementation",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tsc && nodemon dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sahil Jain",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.1",
+    "http-status-code": "^2.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.9.0",
+    "nodemon": "^3.1.7"
+  }
+}
