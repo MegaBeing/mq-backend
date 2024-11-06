@@ -10,6 +10,7 @@
   "author": "Sahil Jain",
   "license": "ISC",
   "dependencies": {
+    "@types/express": "^5.0.0",
     "body-parser": "^1.20.3",
     "express": "^4.21.1",
     "http-status-code": "^2.1.0",
