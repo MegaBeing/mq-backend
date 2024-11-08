@@ -1,5 +1,4 @@
 import { STATUS_CODES } from "http";
-import { RequestBody, ValidationResponseBody } from "./utils";
 import validateEmail from "./Controller/validateEmail";
 
 const bodyparser = require('body-parser')
@@ -10,19 +9,14 @@ const port = 8000
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(bodyparser.json())
 
-
-// Middleware to verify its an email
-
-app.get("/", function(req: any, res: any) {
+app.post("/", function(req: any, res: any) {
     try{
-        const EmailValidation: Promise<Boolean> = validateEmail(req)
-        if(!EmailValidation)
-            throw new Error('This is not a valid email"')
+        validateEmail(req)
         res.status(STATUS_CODES.ok)
         res.json(
             {
                 status: STATUS_CODES.ok,
-                message: "Sending Messages to the user"
+                message: "Sended Messages to the user"
             }
         )
         res.end()

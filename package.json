@@ -12,8 +12,10 @@
   "dependencies": {
     "@types/express": "^5.0.0",
     "body-parser": "^1.20.3",
+    "bullmq": "^5.25.0",
     "express": "^4.21.1",
     "http-status-code": "^2.1.0",
+    "nodemailer": "^6.9.16",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
