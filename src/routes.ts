@@ -1,32 +1,16 @@
-import { STATUS_CODES } from "http";
-import validateEmail from "./Controller/validateEmail";
+import Email from "./Controller/Email"
 
 const bodyparser = require('body-parser')
 const express = require("express");
 const app = express();
-const port = 8000
+const port = process.env.PORT || 8939
+const emailObject = new Email()
 
+// Middleware to validate request body
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(bodyparser.json())
 
-app.post("/", function(req: any, res: any) {
-    try{
-        validateEmail(req)
-        res.status(STATUS_CODES.ok)
-        res.json(
-            {
-                status: STATUS_CODES.ok,
-                message: "Sended Messages to the user"
-            }
-        )
-        res.end()
-    }
-    catch(error){
-        res.json({status: 500, message: error})
-        res.end()
-    }
-        
-});
+app.post("/", (req:any , res: any) => emailObject.ValidateNdExecuteEmailQ(req,res));
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Application running on Port : ${port}`)
   })

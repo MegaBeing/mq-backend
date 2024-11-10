@@ -1,15 +1,13 @@
-import { Request } from "express"; 
-import { STATUS_CODES } from "http"; 
-import { RequestBody, ValidationResponseBody } from "../utils";
-
-const validateEmail = async (req: Request)=> {
+const validateEmail = (email: string) => {
   try {
-    const data: RequestBody = req.body;
-    const isEmail = /^[\w-\.]+@([\w-]+\.)+(com|in)$/i.test(data.email);
-    if (!isEmail) 
-      throw new Error('invalid Email')
-  } catch (error: any) {
-    throw error
+    const re = /^[\w.-]+@[a-zA-Z\d.-]+\.(com|in)$/;
+    const isEmail = re.test(email);
+    if (!isEmail) {
+      throw new Error('Invalid Email');
+    }
+    return isEmail;
+  } catch (error) {
+    throw error;
   }
 };
 
