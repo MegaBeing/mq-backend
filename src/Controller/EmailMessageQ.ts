@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export class EmailMessageQ{
+export class EmailMessageQ {
     #q: Queue;
     #worker: Worker;
 
@@ -25,16 +25,20 @@ export class EmailMessageQ{
                 removeOnComplete: true, removeOnFail: 1000
             }
         })
-    
+
         this.#worker = new Worker('emailQ', async (job) => {
             const { data } = job;
             try {
+                console.log('----->')
+                console.log(data)
                 await new Promise((resolve, reject) => {
                     transporter.sendMail(data, (error: any, info: any) => {
                         if (error) {
+                            console.log('error')
                             reject(error)
                         }
                         else {
+                            console.log('gone')
                             resolve(info)
                         }
                     })
@@ -50,7 +54,7 @@ export class EmailMessageQ{
                 }
             })
     }
-    
+
 
     async createMsgQ(email: string) {
         try {
@@ -64,17 +68,20 @@ export class EmailMessageQ{
                 await this.#q.add(`emailQelement -> ${i}`, { data: message })
             }
             await new Promise((resolve, reject) => {
-                this.#worker.on('completed',(error: any, info: any) =>{
+                this.#worker.on('completed', (error: any, info: any) => {
+                    console.log('Completed')
                     resolve(info);
                 })
-                this.#worker.on('failed',(error:any, info: any) => {
+                this.#worker.on('failed', (error: any, info: any) => {
+                    console.log('failed')
                     reject(error);
                 })
                 setTimeout(() => {
+                    console.log('Timeout')
                     reject('Job failed due to time out');
                 }, 10000);
             })
-        }catch(error){
+        } catch (error) {
             throw error;
         }
     }
