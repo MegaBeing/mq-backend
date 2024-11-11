@@ -8,3 +8,8 @@ export interface MessageBody {
     subject: string;
     html: string;
 }
+
+export interface EmailDocument {
+    email: string;
+    dateTime? : string 
+}

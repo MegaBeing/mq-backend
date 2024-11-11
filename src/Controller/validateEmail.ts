@@ -1,11 +1,11 @@
-const validateEmail = (email: string) => {
+const validateEmail = (email: string): Boolean => {
   try {
     const re = /^[\w.-]+@[a-zA-Z\d.-]+\.(com|in)$/;
     const isEmail = re.test(email);
     if (!isEmail) {
-      throw new Error('Invalid Email');
+      return false;
     }
-    return isEmail;
+    return true;
   } catch (error) {
     throw error;
   }

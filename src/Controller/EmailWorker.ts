@@ -22,7 +22,7 @@ export class EmailWorker {
                 }).then((message) => {
                     console.log("Transporter Success Message:", message)
                 }).catch((error) => {
-                    console.log("Transporter Error Message:", error)
+                    // console.log("Transporter Error Message:", error)
                     throw error
                 })
             } catch (error) {

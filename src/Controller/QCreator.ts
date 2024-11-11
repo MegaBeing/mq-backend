@@ -5,9 +5,6 @@ const nodemailer = require('nodemailer') // import
 const Qobj= new EmailQueue();
 const transporter = nodemailer.createTransport({
     service:'gmail',
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, 
     auth: {
         user: process.env.EMAIL,
         pass: process.env.PASSWORD,
@@ -15,9 +12,10 @@ const transporter = nodemailer.createTransport({
 });
 const worker = new EmailWorker(transporter)
 
-export class EmailMessageQ {
+export class QCreator {
     async createMsgQ(email: string) {
         try {
+            console.log(process.env.EMAIL, process.env.PASSWORD)
             for (let i = 0; i < 5; i++) {
                 let message : MessageBody= {
                     from: process.env.EMAIL as string,
