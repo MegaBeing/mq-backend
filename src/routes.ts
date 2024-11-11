@@ -1,9 +1,12 @@
 import Email from "./Controller/Email"
 
+// configuration ----------------------------------------------------------------
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 8939
 const emailObject = new Email()
+require('dotenv').config();
+// ----------------------------------------------------------------
 
 // Middleware to validate request body
 app.use(express.json())

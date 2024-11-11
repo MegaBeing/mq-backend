@@ -1,6 +1,8 @@
-import { Queue, Worker } from "bullmq";
+import { EmailQueue } from "./EmailQueue";
+import { MessageBody } from "../types";
+import { EmailWorker } from "./EmailWorker";
 const nodemailer = require('nodemailer') // import
-
+const Qobj= new EmailQueue();
 const transporter = nodemailer.createTransport({
     host: "gmail.com",
     port: 587,
@@ -10,76 +12,34 @@ const transporter = nodemailer.createTransport({
         pass: process.env.PASSWORD,
     },
 });
-
+const worker = new EmailWorker(transporter)
 export class EmailMessageQ {
-    #q: Queue;
-    #worker: Worker;
-
-    constructor() {
-        this.#q = new Queue('emailQ', {
-            connection: {
-                host: '127.0.0.1',
-                port: 6379
-            },
-            defaultJobOptions: {
-                removeOnComplete: true, removeOnFail: 1000
-            }
-        })
-
-        this.#worker = new Worker('emailQ', async (job) => {
-            const { data } = job;
-            try {
-                console.log('----->')
-                console.log(data)
-                await new Promise((resolve, reject) => {
-                    transporter.sendMail(data, (error: any, info: any) => {
-                        if (error) {
-                            console.log('error')
-                            reject(error)
-                        }
-                        else {
-                            console.log('gone')
-                            resolve(info)
-                        }
-                    })
-                })
-            } catch (error) {
-                throw error;
-            }
-        },
-            {
-                connection: {
-                    host: '127.0.0.1',
-                    port: 6379
-                }
-            })
-    }
-
-
     async createMsgQ(email: string) {
         try {
             for (let i = 0; i < 5; i++) {
-                let message = {
-                    from: process.env.EMAIL,
+                let message : MessageBody= {
+                    from: process.env.EMAIL as string,
                     to: email,
                     subject: "Signed In To MQ Website",
                     html: `<h1> Q-element -> ${i} </h1>`,
                 };
-                await this.#q.add(`emailQelement -> ${i}`, { data: message })
+                await Qobj.addMsg(i, message)
             }
             await new Promise((resolve, reject) => {
-                this.#worker.on('completed', (error: any, info: any) => {
-                    console.log('Completed')
+                worker.OnComplete((error: any, info: any) => {
                     resolve(info);
                 })
-                this.#worker.on('failed', (error: any, info: any) => {
-                    console.log('failed')
+                worker.OnFailed((error: any, info: any) => {
                     reject(error);
                 })
                 setTimeout(() => {
-                    console.log('Timeout')
                     reject('Job failed due to time out');
                 }, 10000);
+            }).then((message) => {
+                console.log('Success Message: ', message)
+            }).catch((error) => {
+                console.log('Error Message: ', error)
+                throw new Error(error);
             })
         } catch (error) {
             throw error;
