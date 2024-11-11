@@ -4,6 +4,7 @@ export class EmailWorker {
     #worker: Worker
 
     constructor(transporter: any) {
+        try{
         this.#worker = new Worker('EMAIL_QUEUE', async (job) => {
             const { data } = job;
             try {
@@ -12,11 +13,9 @@ export class EmailWorker {
                 await new Promise((resolve, reject) => {
                     transporter.sendMail(data, (error: any, info: any) => {
                         if (error) {
-                            console.log('error')
                             reject(error)
                         }
                         else {
-                            console.log('')
                             resolve('Email sent successfully')
                         }
                     })
@@ -24,6 +23,7 @@ export class EmailWorker {
                     console.log("Transporter Success Message:", message)
                 }).catch((error) => {
                     console.log("Transporter Error Message:", error)
+                    throw error
                 })
             } catch (error) {
                 throw error;
@@ -35,6 +35,9 @@ export class EmailWorker {
                     port: 6379
                 }
             })
+        }catch(error) {
+            throw error;
+        }
     }
     OnComplete(callback: any){
         return this.#worker.on('completed', callback)

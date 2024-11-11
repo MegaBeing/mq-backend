@@ -6,7 +6,6 @@ export default class Email {
     async ValidateNdExecuteEmailQ(req: any, res: any) {
         try {
             const email = req.body.email;
-            console.log(process.env.EMAIL)
             validateEmail(email);
 
             const QObject = new EmailMessageQ();
