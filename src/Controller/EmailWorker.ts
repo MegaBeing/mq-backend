@@ -4,7 +4,7 @@ export class EmailWorker {
     #worker: Worker
 
     constructor(transporter: any) {
-        this.#worker = new Worker('emailQ', async (job) => {
+        this.#worker = new Worker('EMAIL_QUEUE', async (job) => {
             const { data } = job;
             try {
                 console.log('----->')

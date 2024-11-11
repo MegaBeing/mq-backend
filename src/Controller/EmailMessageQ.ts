@@ -4,15 +4,16 @@ import { EmailWorker } from "./EmailWorker";
 const nodemailer = require('nodemailer') // import
 const Qobj= new EmailQueue();
 const transporter = nodemailer.createTransport({
-    host: "gmail.com",
+    host: "smtp.gmail.com",
     port: 587,
-    secure: false,
+    secure: false, 
     auth: {
         user: process.env.EMAIL,
         pass: process.env.PASSWORD,
     },
 });
 const worker = new EmailWorker(transporter)
+
 export class EmailMessageQ {
     async createMsgQ(email: string) {
         try {

@@ -1,7 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import validateEmail from "./validateEmail";
 import { EmailMessageQ } from "./EmailMessageQ";
-import { RequestBody } from '../types';
 
 export default class Email {
     async ValidateNdExecuteEmailQ(req: any, res: any) {
