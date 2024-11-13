@@ -11,8 +11,8 @@ export default class AppController {
             if(!EmailVal)
             {
                 res.status(StatusCodes.NOT_ACCEPTABLE).json({
-                    status: StatusCodes.OK,
-                    message: "Sent message to the user"
+                    status: StatusCodes.NOT_ACCEPTABLE,
+                    message: "Not a valid Email"
                 });
                 return;
             }
