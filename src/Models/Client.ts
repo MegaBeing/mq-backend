@@ -1,25 +1,33 @@
 // Client Connection
-const { MongoClient } = require("mongodb");
-const url = process.env.MONGODB_URL
-
-export class Client{
+const { MongoClient, ServerApiVersion } = require('mongodb');
+export class MongoDBClient {
     client : any
-
-    constructor() {
-        this.client = new MongoClient(url);
-        this.create_connection();
-    }
-
-    async create_connection(){
+    async create_connection() {
+        try{
+        const URI = process.env.MONGODB_URI
+        this.client = new MongoClient(URI, {
+            serverApi: {
+                version: ServerApiVersion.v1,
+                strict: true,
+                deprecationErrors: true,
+            }
+        }
+        )
         await this.client.connect();
+    }catch(error){
+        throw error;
     }
-
-    async close_connection(){
+    }
+    async get_db(db: string) {
+        
+        return await this.client.db(db)
+    }
+    async close_connection() {
         await this.client.close();
         console.log("MongoDB client closed. Exiting process.");
     }
-    async gracefulShutdown(signal: string){
-        console.log(`Received ${signal}. Closing MongoDB client.`); 
+    async gracefulShutdown(signal: string) {
+        console.log(`Received ${signal}. Closing MongoDB client.`);
         await this.close_connection();
         process.exit(0);
     }

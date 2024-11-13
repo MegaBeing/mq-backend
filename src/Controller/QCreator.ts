@@ -15,7 +15,6 @@ const worker = new EmailWorker(transporter)
 export class QCreator {
     async createMsgQ(email: string) {
         try {
-            console.log(process.env.EMAIL, process.env.PASSWORD)
             for (let i = 0; i < 5; i++) {
                 let message : MessageBody= {
                     from: process.env.EMAIL as string,

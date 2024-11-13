@@ -1,10 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import validateEmail from "./validateEmail";
 import { QCreator } from "./QCreator";
-import { Client } from '../Models/Client';
 import { EmailCollection } from '../Models/EmailCollection';
-
-const ClientObj = new Client();
+import { MongoClientObj} from '../routes';
 export default class AppController {
     async ValidateNdExecuteEmailQ(req: any, res: any) {
         try {
@@ -19,8 +17,7 @@ export default class AppController {
                 return;
             }
             // DB Queries
-            await ClientObj.create_connection();
-            const db = ClientObj.client.db('Data')
+            const db = MongoClientObj.get_db('Data')
             const EmailCollectionObj = new EmailCollection('Email',db);
             EmailCollectionObj.create(email);
 
@@ -42,19 +39,3 @@ export default class AppController {
         }
     }
 }
-
-process.on('SIGINT', ClientObj.gracefulShutdown);    
-process.on('SIGTERM', ClientObj.gracefulShutdown);   
-process.on('SIGUSR2', ClientObj.gracefulShutdown);
-
-process.on('uncaughtException', async (err) => {
-    console.error("Uncaught Exception:", err);
-    await ClientObj.close_connection();
-    process.exit(1);
-});
-
-process.on('unhandledRejection', async (reason, promise) => {
-    console.error("Unhandled Rejection at:", promise, "reason:", reason);
-    await ClientObj.close_connection();
-    process.exit(1);
-});
