@@ -3,7 +3,7 @@ import { Worker } from "bullmq";
 export class EmailWorker {
     #worker: Worker
 
-    constructor(transporter: any) {
+    constructor(transporter: any, redisConnection: any) {
         try{
         this.#worker = new Worker('EMAIL_QUEUE', async (job) => {
             const { data } = job;
@@ -30,10 +30,7 @@ export class EmailWorker {
             }
         },
             {
-                connection: {
-                    host: '127.0.0.1',
-                    port: 6379
-                }
+                connection: redisConnection
             })
         }catch(error) {
             throw error;

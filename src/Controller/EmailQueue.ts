@@ -3,12 +3,9 @@ import { MessageBody } from "../types";
 
 export class EmailQueue{
     #q: Queue;
-    constructor() {
+    constructor(redisConnection: any) {
         this.#q = new Queue('EMAIL_QUEUE', {
-            connection: {
-                host: '127.0.0.1',
-                port: 6379
-            },
+            connection: redisConnection,
             defaultJobOptions: {
                 removeOnComplete: true, removeOnFail: 1000
             }
