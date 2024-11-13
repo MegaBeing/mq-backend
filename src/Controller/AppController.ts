@@ -3,8 +3,6 @@ import validateEmail from "./validateEmail";
 import { QCreator } from "./QCreator";
 import { EmailCollection } from '../Models/EmailCollection';
 import { MongoClientObj, RedisClientObj} from '../routes';
-import { json } from 'body-parser';
-import { EmailDocument } from '../types';
 export default class AppController {
     async ValidateNdExecuteEmailQ(req: any, res: any) {
         try {
@@ -22,15 +20,19 @@ export default class AppController {
                 });
                 return;
             }
-            // DB Queries
-            const db = await MongoClientObj.get_db('Data')
-            const EmailCollectionObj = new EmailCollection('Email',db);
-            EmailCollectionObj.create(email);
-
+            
             // Controller Queries
             const redisConnection = RedisClientObj.client
             const QObject = new QCreator(redisConnection);
             await QObject.createMsgQ(email);
+
+            // DB Queries
+            const db = await MongoClientObj.get_db('Data')
+            const EmailCollectionObj = new EmailCollection('Email',db);
+            await EmailCollectionObj.create(email);
+            
+            const timestamp: string = (await EmailCollectionObj.read(email)).dateTime!
+            redisConnection.set(email, timestamp)
             
             console.log({
                 status: StatusCodes.OK,
