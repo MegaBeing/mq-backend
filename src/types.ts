@@ -10,6 +10,7 @@ export interface MessageBody {
 }
 
 export interface EmailDocument {
+    _id?: Object;
     email: string;
     dateTime? : string 
 }

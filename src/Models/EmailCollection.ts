@@ -22,7 +22,7 @@ export class EmailCollection {
                 return this.update(email);
             }
             obj.dateTime = DateTime.now().toISO();
-            await this.#col.insert(obj);
+            await this.#col.insertOne(obj);
         } catch (error) {
             console.error('Error creating email document:', error);
             throw error;
@@ -31,7 +31,7 @@ export class EmailCollection {
 
     async read(obj: Object) {
         try {
-            const doc = await this.#col.findOne(obj);
+            const doc:EmailDocument= await this.#col.findOne(obj);
             return doc;
         } catch (error) {
             console.error('Error reading email document:', error);

@@ -14,7 +14,7 @@ export class RedisClient {
         await this.client.set(key, value);
     }
 
-    async get(key: string){
-        await this.client.get(key);
+    async get(key: string): Promise<string>{
+        return await this.client.get(key);
     }
 }
