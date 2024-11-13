@@ -14,6 +14,7 @@ export class MongoDBClient {
         }
         )
         await this.client.connect();
+        console.log(`MongoDB Server Connected 👍`)
     }catch(error){
         throw error;
     }
