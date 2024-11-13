@@ -34,20 +34,3 @@ app.listen(port, async () => {
   console.log(`Server running on Port : ${port} 🚀🚀🚀`)
 })
 
-// Server Termination
-
-process.on('SIGINT', MongoClientObj.gracefulShutdown);    
-process.on('SIGTERM', MongoClientObj.gracefulShutdown);   
-process.on('SIGUSR2', MongoClientObj.gracefulShutdown);
-
-process.on('uncaughtException', async (err) => {
-    console.error("Uncaught Exception:", err);
-    await MongoClientObj.close_connection();
-    process.exit(1);
-});
-
-process.on('unhandledRejection', async (reason, promise) => {
-    console.error("Unhandled Rejection at:", promise, "reason:", reason);
-    await MongoClientObj.close_connection();
-    process.exit(1);
-});
