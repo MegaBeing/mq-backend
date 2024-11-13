@@ -16,5 +16,11 @@ export class Client{
 
     async close_connection(){
         await this.client.close();
+        console.log("MongoDB client closed. Exiting process.");
+    }
+    async gracefulShutdown(signal: string){
+        console.log(`Received ${signal}. Closing MongoDB client.`); 
+        await this.close_connection();
+        process.exit(0);
     }
 }
