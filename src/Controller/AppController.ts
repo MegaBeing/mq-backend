@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import validateEmail from "./validateEmail";
-import { QCreator } from "./QCreator";
+import validateEmail from "../Middleware/validateEmail";
+import { QCreator } from "../MessagingQueues/QCreator";
 import { EmailCollection } from '../Models/EmailCollection';
 import { MongoClientObj, RedisClientObj} from '../routes';
 export default class AppController {
