@@ -17,6 +17,7 @@ export class EmailCollection {
     async create(email: string) {
         try {
             let obj:EmailDocument = { email };
+            console.log(obj)
             const doc = await this.read(obj);
             if (doc) {
                 return this.update(email);
@@ -41,9 +42,9 @@ export class EmailCollection {
 
     async update(email: string) {
         try {
-            const query = { email };
+            const query = { "email":email };
             const updateDoc = { 'dateTime': DateTime.now() };
-            await this.#col.updateOne(query, updateDoc);
+            await this.#col.updateOne(query, {$set : updateDoc});
         } catch (error) {
             console.error('Error updating email document:', error);
             throw error;

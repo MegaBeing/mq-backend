@@ -6,7 +6,7 @@ export class RedisClient {
         this.client = createClient({
             url: process.env.REDIS_URL
         })
-        await this.client.connect();
+        this.client.connect();
         console.log(`Redis Server Connected 👍`)
     }
 

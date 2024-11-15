@@ -1,15 +1,14 @@
 import { StatusCodes } from 'http-status-codes';
 import validateEmail from "../Middleware/validateEmail";
-import { QCreator } from "../MessagingQueues/QCreator";
+import { QHandler } from "../MessagingQueues/QHandler";
 import { EmailCollection } from '../Models/EmailCollection';
-import { MongoClientObj, RedisClientObj} from '../routes';
+import { MongoClientObj, RedisClientObj } from '../routes';
 export default class AppController {
     async ValidateNdExecuteEmailQ(req: any, res: any) {
         try {
             const email = req.body.email;
             const EmailVal = validateEmail(email);
-            if(!EmailVal)
-            {
+            if (!EmailVal) {
                 console.log({
                     status: StatusCodes.NOT_ACCEPTABLE,
                     message: "Not a valid Email"
@@ -20,20 +19,20 @@ export default class AppController {
                 });
                 return;
             }
-            
+
             // Controller Queries
             const redisConnection = RedisClientObj.client
-            const QObject = new QCreator(redisConnection);
+            const QObject = new QHandler(redisConnection);
             await QObject.createMsgQ(email);
 
             // DB Queries
-            const db = await MongoClientObj.get_db('Data')
-            const EmailCollectionObj = new EmailCollection('Email',db);
-            await EmailCollectionObj.create(email);
-            
-            const timestamp: string = (await EmailCollectionObj.read(email)).dateTime!
-            redisConnection.set(email, timestamp)
-            
+            // const db = await MongoClientObj.get_db('Data')
+            // const EmailCollectionObj = new EmailCollection('Email', db);
+            // await EmailCollectionObj.create(email);
+
+            // const timestamp: string = (await EmailCollectionObj.read(email)).dateTime!
+            // redisConnection.set(email, timestamp)
+
             console.log({
                 status: StatusCodes.OK,
                 message: "Sent message to the user"
@@ -56,12 +55,11 @@ export default class AppController {
         }
     }
 
-    async Query(req: any, res: any){
-        try{
+    async Query(req: any, res: any) {
+        try {
             const email = req.body.email;
             const EmailVal = validateEmail(email);
-            if(!EmailVal)
-            {
+            if (!EmailVal) {
                 console.log({
                     status: StatusCodes.NOT_ACCEPTABLE,
                     message: "Not a valid Email"
@@ -74,14 +72,14 @@ export default class AppController {
                 return;
             }
 
-            const start = new Date().getTime(); 
+            const start = new Date().getTime();
 
             // Redis Search
             const timestamp_via_redis: string = await RedisClientObj.get(email);
-            if(timestamp_via_redis) // cache hit
-            {   
+            if (timestamp_via_redis) // cache hit
+            {
                 const end = new Date().getTime();
-                const executionTime = end - start; 
+                const executionTime = end - start;
                 console.log({
                     status: StatusCodes.ACCEPTED,
                     timestamp: timestamp_via_redis,
@@ -97,19 +95,18 @@ export default class AppController {
 
             // cache miss
             const db = await MongoClientObj.get_db('Data')
-            const EmailCollectionObj = new EmailCollection('Email',db);
-            const timestamp_via_db: string | undefined = (await EmailCollectionObj.read({email})).dateTime
-            if(!timestamp_via_db)
-            {
+            const EmailCollectionObj = new EmailCollection('Email', db);
+            const timestamp_via_db: string | undefined = (await EmailCollectionObj.read({ email })).dateTime
+            if (!timestamp_via_db) {
                 res.status(StatusCodes.BAD_REQUEST).json({
                     status: StatusCodes.BAD_REQUEST,
                     message: "Email not found"
                 })
             }
             const end = new Date().getTime();
-            const executionTime = end - start; 
+            const executionTime = end - start;
             // memoization query 
-            await RedisClientObj.set(email,timestamp_via_db); 
+            await RedisClientObj.set(email, timestamp_via_db);
             console.log({
                 status: StatusCodes.ACCEPTED,
                 timestamp: timestamp_via_db,
@@ -122,7 +119,7 @@ export default class AppController {
             })
 
         }
-        catch(error){
+        catch (error) {
             throw error;
         }
     }
