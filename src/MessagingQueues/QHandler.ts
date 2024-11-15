@@ -13,6 +13,7 @@ export class QHandler {
                     from: process.env.EMAIL as string,
                     to: email,
                     subject: "Signed In To MQ Website",
+                    text: 'This is a test email sent using Nodemailer!',
                     html: `<h1> Q-element -> ${i + 1} </h1>`,
                 };
                 await this.q.addMsg(i + 1, message)

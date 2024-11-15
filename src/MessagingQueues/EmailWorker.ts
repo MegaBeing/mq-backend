@@ -1,14 +1,9 @@
 import { Worker, Job } from "bullmq";
 import Redis from "ioredis";
 import { NodeMailer } from "./NodeMailer";
+import { MessageBody } from "../types";
+require('dotenv').config()
 
-// Define interface for email job data
-interface EmailJobData {
-    to: string;
-    subject: string;
-    text: string;
-    // Add other email fields as needed
-}
 
 async function initializeWorker() {
     try {
@@ -17,8 +12,7 @@ async function initializeWorker() {
             host: 'localhost',
             port: 6379,
             db: 0,
-            maxRetriesPerRequest: null 
-            // Add other Redis connection options as needed
+            maxRetriesPerRequest: null
         });
 
         const NodeMailerObj = new NodeMailer();
@@ -27,9 +21,9 @@ async function initializeWorker() {
         // Create the worker
         const emailWorker = new Worker(
             'EMAIL_QUEUE',
-            async (job: Job<EmailJobData>) => {
+            async (job: Job<MessageBody>) => {
                 console.log('Processing job:', job.id, job.data);
-                
+
                 try {
                     // Send email using NodeMailer
                     const result = await NodeMailerObj.transporter.sendMail(job.data);
@@ -37,25 +31,25 @@ async function initializeWorker() {
                     return result;
                 } catch (error) {
                     console.error('Failed to process email job:', error);
-                    throw error; // This will trigger the 'failed' event
+                    throw error;
                 }
             },
             {
                 connection: redisConnection,
-                concurrency: 5, // Process 5 jobs simultaneously
+                concurrency: 5,
                 limiter: {
-                    max: 10, // Maximum number of jobs processed per time window
-                    duration: 1000 // Time window in milliseconds
+                    max: 10,
+                    duration: 1000
                 }
             }
         );
 
         // Event handlers
-        emailWorker.on('completed', (job: Job<EmailJobData>) => {
+        emailWorker.on('completed', (job: Job<MessageBody>) => {
             console.log(`Job ${job.id} completed successfully`);
         });
 
-        emailWorker.on('failed', (job: Job<EmailJobData>|undefined, error: Error) => {
+        emailWorker.on('failed', (job: Job<MessageBody> | undefined, error: Error) => {
             console.error(`Job ${job?.id} failed:`, error);
         });
 
